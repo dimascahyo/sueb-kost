@@ -1,0 +1,113 @@
+    // get = http://localhost/sueb_kost_v0/index.php/contoh_restcontrol/
+    // post = http://localhost/sueb_kost_v0/index.php/contoh_restcontrol/
+    // put = http://localhost/sueb_kost_v0/index.php/contoh_restcontrol/index/id/5
+    // delete = http://localhost/sueb_kost_v0/index.php/contoh_restcontrol/index/id/5
+    
+
+    public function index_get()
+        {
+            header('Content-Type: application/json');
+            $id = $this->get('id_kamar');
+            if ($id == '') {
+                $db_teman = $this->db->get('penghuni')->result();
+            } else {
+                $this->db->where('id', $id);
+                $db_teman = $this->db->get('penghuni')->result();
+            }
+            $this->response($db_teman, 200);
+        }
+    
+    
+    
+        public function view_get()
+        {
+            header('Content-Type: application/json');
+            $this->load->database();
+            $db_teman = $this->db->get('penghuni')->result();
+            $this->response($db_teman, 200);
+        }
+    
+    
+        
+        public function index_post()
+        {
+            header('Content-Type: application/json');
+    
+            $data = json_decode(file_get_contents('php://input'), true);
+    
+            $this->db->insert('penghuni', $data);
+    
+            if ($this->db->affected_rows() < 1) {
+                $response = [
+                    'status' => false,
+                    'message' => 'Gagal input data',
+                ];
+                $this->response($response, 401);
+            } else {
+                $response = [
+                    'status' => true,
+                    'message' => 'Berhasil input data',
+                ];
+                $this->response($response, 200);
+            }
+        }
+    
+    
+    
+        public function index_put()
+        {
+            header('Content-Type: application/json');
+    
+            $data = json_decode(file_get_contents('php://input'), true);
+            $id = $this->get('id_kamar');
+    
+    
+            $this->db->where('id_kamar', $id);
+            $this->db->update('penghuni', $data);
+    
+            if ($this->db->affected_rows() < 1) {
+                $response = [
+                    'status' => false,
+                    'message' => 'Gagal update data',
+                ];
+                $this->response($response, 401);
+            } else {
+                $response = [
+                    'status' => true,
+                    'message' => 'Berhasil update data',
+                    "data" => [
+                        "id_kamar" => $id,
+                    ],
+                ];
+                $this->response($response, 200);
+            }
+        }
+    
+    
+    
+        public function index_delete()
+        {
+            header('Content-Type: application/json');
+    
+            $id = $this->get('id_kamar');
+    
+            $this->db->where('id_kamar', $id);
+            $this->db->delete('penghuni');
+    
+            if ($this->db->affected_rows() < 1) {
+                $response = [
+                    'status' => false,
+                    'message' => 'Gagal hapus data',
+                ];
+                $this->response($response, 401);
+            } else {
+                $response = [
+                    'status' => true,
+                    'message' => 'Berhasil hapus data',
+                    "data" => [
+                        "id_kamar" => $id,
+                    ],
+                ];
+                $this->response($response, 200);
+            }
+        }
